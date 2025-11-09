@@ -127,12 +127,13 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
                 编辑
               </Button>
               <Button
-                size="sm"
+                size="md"
                 variant="primary"
                 onClick={handleEndTask}
                 isLoading={isEnding}
+                className="min-w-[80px]"
               >
-                结束
+                ⏹️ 结束
               </Button>
             </div>
           </div>

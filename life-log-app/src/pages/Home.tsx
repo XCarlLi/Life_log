@@ -91,7 +91,7 @@ export const Home: React.FC = () => {
         </div>
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="bg-primary text-white px-6 py-3 rounded-lg font-semibold shadow-soft hover:bg-primary/90 transition-all duration-200 hover:shadow-medium hover:-translate-y-0.5 flex items-center gap-2"
+          className="bg-primary text-white px-6 py-3 rounded-lg font-bold shadow-medium hover:bg-primary-hover transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2 text-base"
         >
           <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
