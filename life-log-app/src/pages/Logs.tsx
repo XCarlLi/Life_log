@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Select, Modal, Button } from '../components/common';
+import { Select, Modal } from '../components/common';
 import { LogList } from '../components/log';
 import { LogForm } from '../components/log';
 import { useLogStore, useCategoryStore, useToastStore } from '../stores';

@@ -78,11 +78,27 @@ export async function handleLogSplit(log: LogEntry): Promise<void> {
   // 先删除旧的拆分记录
   await splitLogService.deleteByParentId(log.id);
 
-  // 如果任务跨天且已完成，创建新的拆分记录
-  if (log.status === 'completed' && isCrossDay(log)) {
+  // 如果任务跨天且已完成（有endTime），创建新的拆分记录
+  if (log.endTime && isCrossDay(log)) {
     const splitLogs = splitCrossDayLog(log);
     await splitLogService.bulkCreate(splitLogs);
   }
+}
+
+/**
+ * 处理跨天日志（批量处理的别名）
+ * @param logs 日志数组
+ */
+export async function handleCrossDayLogs(logs: LogEntry[]): Promise<void> {
+  return await batchHandleLogSplit(logs);
+}
+
+/**
+ * 处理单个跨天日志（别名）
+ * @param log 日志条目
+ */
+export async function processCrossDayLog(log: LogEntry): Promise<void> {
+  return await handleLogSplit(log);
 }
 
 /**

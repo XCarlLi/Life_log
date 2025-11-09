@@ -264,6 +264,16 @@ export const splitLogService = {
   async deleteByParentId(parentId: string): Promise<void> {
     await db.splitLogs.where('parentId').equals(parentId).delete();
   },
+
+  // 根据日志ID获取拆分记录（别名）
+  async getByLogId(parentId: string): Promise<SplitLogEntry[]> {
+    return await this.getByParentId(parentId);
+  },
+
+  // 删除拆分记录
+  async delete(id: string): Promise<void> {
+    await db.splitLogs.delete(id);
+  },
 };
 
 // ============ 设置操作 ============

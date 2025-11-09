@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, CardHeader, CardTitle, CardContent, Select } from '../components/common';
 import { useSettingsStore, useToastStore } from '../stores';
-import { exportService } from '../services/export';
+import { exportService } from '../services/export-helpers';
 import { useLogStore } from '../stores';
 
 export const Settings: React.FC = () => {

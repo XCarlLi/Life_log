@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, Input, Badge, Card, CardContent } from '../components/common';
 import { useCategoryStore, useToastStore } from '../stores';
-import { PRESET_CATEGORIES } from '../constants/categories';
+// PRESET_CATEGORIES is available in '../constants/categories' if needed
 
 export const Categories: React.FC = () => {
   const { categories, addCategory, updateCategory, deleteCategory } = useCategoryStore();

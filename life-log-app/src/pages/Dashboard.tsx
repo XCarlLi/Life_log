@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLogStore, useCategoryStore, useSettingsStore } from '../stores';
 import { StatCard, CategoryPieChart, TrendLineChart, WeeklyBarChart, StreakCounter } from '../components/stats';
-import { calculateDayStatistics, calculateWeekStatistics } from '../services/statistics';
+import { calculateDayStatistics, calculateWeekStatistics } from '../services/statistics-helpers';
 import { formatDuration } from '../utils/format';
 import type { DayStatistics, WeekStatistics, PieChartData, LineChartData, BarChartData } from '../types';
 
