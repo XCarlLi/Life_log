@@ -2,18 +2,19 @@ import { MINUTES_PER_HOUR, HOURS_PER_DAY } from '../constants';
 
 // ============ 时长格式化 ============
 /**
- * 将分钟数格式化为易读的时长字符串
- * @param minutes 分钟数
- * @returns 格式化后的字符串，例如："2h 30m"、"45m"、"1d 3h"
+ * 将秒数格式化为易读的时长字符串
+ * @param seconds 秒数
+ * @returns 格式化后的字符串，例如："2小时 30分钟"、"45分钟"、"1天 3小时"
  */
-export function formatDuration(minutes: number): string {
-  if (minutes < 1) {
-    return '0m';
+export function formatDuration(seconds: number): string {
+  if (seconds < 1) {
+    return '0秒';
   }
 
-  const days = Math.floor(minutes / (MINUTES_PER_HOUR * HOURS_PER_DAY));
-  const hours = Math.floor((minutes % (MINUTES_PER_HOUR * HOURS_PER_DAY)) / MINUTES_PER_HOUR);
-  const mins = Math.floor(minutes % MINUTES_PER_HOUR);
+  const days = Math.floor(seconds / (60 * 60 * HOURS_PER_DAY));
+  const hours = Math.floor((seconds % (60 * 60 * HOURS_PER_DAY)) / (60 * 60));
+  const mins = Math.floor((seconds % (60 * 60)) / 60);
+  const secs = Math.floor(seconds % 60);
 
   const parts: string[] = [];
 
@@ -23,11 +24,46 @@ export function formatDuration(minutes: number): string {
   if (hours > 0) {
     parts.push(`${hours}小时`);
   }
-  if (mins > 0 || parts.length === 0) {
+  if (mins > 0) {
     parts.push(`${mins}分钟`);
+  }
+  if (secs > 0 && days === 0 && hours === 0) {
+    parts.push(`${secs}秒`);
+  }
+
+  if (parts.length === 0) {
+    return '0秒';
   }
 
   return parts.join(' ');
+}
+
+/**
+ * 格式化日期时间
+ * @param date Date对象或ISO字符串
+ * @param format 格式类型：'full' | 'date' | 'time' | 'datetime'
+ * @returns 格式化后的字符串
+ */
+export function formatDateTime(date: Date | string, format: 'full' | 'date' | 'time' | 'datetime' = 'full'): string {
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+
+  switch (format) {
+    case 'date':
+      return dateObj.toLocaleDateString('zh-CN');
+    case 'time':
+      return dateObj.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    case 'datetime':
+      return dateObj.toLocaleString('zh-CN');
+    case 'full':
+    default:
+      return dateObj.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+  }
 }
 
 /**

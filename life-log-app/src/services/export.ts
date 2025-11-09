@@ -1,7 +1,7 @@
 import type { LogEntry, Category, ExportData } from '../types';
 import { formatDate, formatDateTime } from '../utils/date';
 import { formatDuration, escapeCsvField } from '../utils/format';
-import { calculateCategoryStats } from './statistics';
+import { calculateCategoryStats } from './statistics-helpers';
 
 /**
  * 导出为CSV格式
@@ -24,12 +24,13 @@ export async function exportToCsv(
 
   // 处理每条日志
   logs.forEach(log => {
-    if (log.status === 'completed') {
+    if (log.endTime) {
+      const duration = Math.floor((new Date(log.endTime).getTime() - new Date(log.startTime).getTime()) / (1000 * 60));
       const row = [
         formatDateTime(log.startTime),
         log.endTime ? formatDateTime(log.endTime) : '',
-        log.duration?.toString() || '0',
-        formatDuration(log.duration || 0),
+        duration.toString(),
+        formatDuration(duration * 60), // Convert minutes to seconds
         log.categoryIds.map(id => categoryMap.get(id) || '未知').join(';'),
         log.location || '',
         log.description,
@@ -56,10 +57,15 @@ export async function exportToJson(
   startDate: string,
   endDate: string
 ): Promise<string> {
-  const completedLogs = logs.filter(log => log.status === 'completed');
-  const categoryStats = await calculateCategoryStats(completedLogs, categories);
+  const completedLogs = logs.filter(log => log.endTime);
+  const categoryStats = calculateCategoryStats(completedLogs, categories);
 
-  const totalDuration = completedLogs.reduce((sum, log) => sum + (log.duration || 0), 0);
+  const totalDuration = completedLogs.reduce((sum, log) => {
+    if (log.endTime) {
+      return sum + Math.floor((new Date(log.endTime).getTime() - new Date(log.startTime).getTime()) / (1000 * 60));
+    }
+    return sum;
+  }, 0);
 
   const exportData: ExportData = {
     exportDate: new Date().toISOString(),

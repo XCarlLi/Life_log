@@ -5,61 +5,72 @@ import { v4 as uuidv4 } from 'uuid';
 export const DEFAULT_CATEGORIES_CONFIG: Record<DefaultCategoryType, Omit<Category, 'id' | 'createdAt' | 'updatedAt'>> = {
   work: {
     name: '工作',
-    emoji: '🏢',
+    icon: '🏢',
     color: '#FF6B6B',
-    isDefault: true,
+    description: '工作相关任务',
+    isPreset: true,
     order: 1,
   },
   entertainment: {
     name: '娱乐',
-    emoji: '🎮',
+    icon: '🎮',
     color: '#4ECDC4',
-    isDefault: true,
+    description: '娱乐休闲活动',
+    isPreset: true,
     order: 2,
   },
   commute: {
     name: '通勤',
-    emoji: '🚗',
+    icon: '🚗',
     color: '#FFE66D',
-    isDefault: true,
+    description: '上下班通勤',
+    isPreset: true,
     order: 3,
   },
   rest: {
     name: '休息',
-    emoji: '😴',
+    icon: '😴',
     color: '#95E1D3',
-    isDefault: true,
+    description: '休息睡眠',
+    isPreset: true,
     order: 4,
   },
   meal: {
     name: '吃饭',
-    emoji: '🍔',
+    icon: '🍔',
     color: '#FF8B94',
-    isDefault: true,
+    description: '用餐时间',
+    isPreset: true,
     order: 5,
   },
   study: {
     name: '学习',
-    emoji: '📚',
+    icon: '📚',
     color: '#A8E6CF',
-    isDefault: true,
+    description: '学习充电',
+    isPreset: true,
     order: 6,
   },
   exercise: {
     name: '运动',
-    emoji: '💪',
+    icon: '💪',
     color: '#FFDAC1',
-    isDefault: true,
+    description: '运动健身',
+    isPreset: true,
     order: 7,
   },
   social: {
     name: '社交',
-    emoji: '👨‍👩‍👧‍👦',
+    icon: '👨‍👩‍👧‍👦',
     color: '#B4A7D6',
-    isDefault: true,
+    description: '社交活动',
+    isPreset: true,
     order: 8,
   },
 };
+
+// 导出PRESET_CATEGORIES作为数组
+export const PRESET_CATEGORIES = Object.values(DEFAULT_CATEGORIES_CONFIG);
 
 // 生成预设分类（带UUID和时间戳）
 export const generateDefaultCategories = (): Category[] => {

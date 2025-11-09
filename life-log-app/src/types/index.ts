@@ -3,11 +3,12 @@ export interface Category {
   id: string;                // UUID
   name: string;              // 分类名称，最大20字符
   color: string;             // HEX颜色，如 "#FF6B6B"
-  emoji?: string;            // emoji图标，如 "🏢"
-  isDefault: boolean;        // 是否为预设分类（不可删除）
+  icon?: string;             // emoji图标，如 "🏢"
+  description?: string;      // 可选描述
+  isPreset: boolean;         // 是否为预设分类（不可删除）
   order: number;             // 排序权重
   createdAt: string;         // ISO 8601时间戳
-  updatedAt: string;
+  updatedAt: string;         // ISO 8601时间戳
 }
 
 // 预设分类类型
@@ -25,14 +26,12 @@ export type DefaultCategoryType =
 export interface LogEntry {
   id: string;                // UUID
   startTime: string;         // ISO 8601，如 "2025-11-08T09:00:00+08:00"
-  endTime: string | null;    // null表示进行中
+  endTime?: string;          // ISO 8601，undefined表示进行中
   categoryIds: string[];     // 分类ID数组（多标签）
   description: string;       // 1-140字符
   location?: string;         // 可选，最大50字符
-  duration: number | null;   // 分钟数，进行中为null
-  status: 'active' | 'completed'; // 任务状态
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string;         // ISO 8601时间戳
+  updatedAt: string;         // ISO 8601时间戳
 }
 
 // ============ 拆分记录 (用于跨天统计) ============
@@ -61,23 +60,36 @@ export interface StatisticsCache {
 
 export interface CategoryStat {
   categoryId: string;
-  duration: number;          // 分钟
+  categoryName: string;
+  categoryColor: string;
+  totalSeconds: number;      // 秒
+  percentage: number;        // 百分比
   count: number;             // 任务数量
 }
 
 // ============ 用户设置 ============
 export interface UserSettings {
+  id?: string;
+  theme: 'light' | 'dark';
+  language: 'zh-CN' | 'en-US';
+  weekStartsOn: 0 | 1;            // 0=周日, 1=周一
   longTaskThreshold: number;      // 小时数，默认6
-  weekStartDay: 0 | 1;            // 0=周日, 1=周一
-  defaultExportFormat: 'csv' | 'json';
+  enableNotifications: boolean;
   dashboardLayout: DashboardLayout;
-  streakCount: number;            // 连续记录天数
-  lastActiveDate: string;         // 最后活跃日期 "2025-11-08"
+  exportFormat: 'csv' | 'json';
+  consecutiveDays: number;        // 连续记录天数
+  longestStreak: number;          // 最长记录天数
+  totalLogCount: number;          // 总记录数
+  createdAt: string;              // ISO 8601时间戳
+  updatedAt: string;              // ISO 8601时间戳
 }
 
 export interface DashboardLayout {
-  visibleCharts: ChartType[];     // 显示的图表
-  chartOrder: ChartType[];        // 图表顺序
+  widgets: Array<{
+    id: string;
+    enabled: boolean;
+    order: number;
+  }>;
 }
 
 export type ChartType =
@@ -116,7 +128,7 @@ export interface LogFilter {
 // ============ 统计数据 ============
 export interface DayStatistics {
   date: string;                  // "2025-11-08"
-  totalDuration: number;         // 总时长（分钟）
+  totalSeconds: number;          // 总时长（秒）
   logCount: number;              // 日志数量
   categoryStats: CategoryStat[];
   logs: LogEntry[];
@@ -125,9 +137,10 @@ export interface DayStatistics {
 export interface WeekStatistics {
   weekStart: string;             // 周开始日期
   weekEnd: string;               // 周结束日期
-  totalDuration: number;
+  totalSeconds: number;          // 总时长（秒）
+  averagePerDay: number;         // 日均时长（秒）
   logCount: number;
-  dayStats: DayStatistics[];     // 7天的统计
+  dailyStats: DayStatistics[];   // 7天的统计
   categoryStats: CategoryStat[];
 }
 
@@ -149,13 +162,14 @@ export interface PieChartData {
 }
 
 export interface LineChartData {
-  date: string;                  // "11-08"
-  duration: number;              // 时长（分钟）
+  label: string;                 // "11-08"
+  totalDuration?: number;        // 总时长（秒）
+  [key: string]: number | string | undefined;
 }
 
 export interface BarChartData {
-  date: string;                  // "周一"
-  [categoryName: string]: number | string; // 分类名称: 时长（分钟）
+  label: string;                 // "周一"
+  [categoryId: string]: number | string; // 分类ID: 时长（秒）
 }
 
 export interface HeatMapCell {

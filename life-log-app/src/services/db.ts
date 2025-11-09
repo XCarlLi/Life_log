@@ -1,6 +1,6 @@
 import Dexie, { type Table } from 'dexie';
-import type { Category, LogEntry, SplitLogEntry, UserSettings, ChartType } from '../types';
-import { generateDefaultCategories, DEFAULT_LONG_TASK_THRESHOLD, DEFAULT_WEEK_START_DAY, DEFAULT_EXPORT_FORMAT, DEFAULT_VISIBLE_CHARTS } from '../constants';
+import type { Category, LogEntry, SplitLogEntry, UserSettings } from '../types';
+import { generateDefaultCategories } from '../constants';
 
 // 定义数据库类
 export class LifeLogDatabase extends Dexie {
@@ -14,8 +14,8 @@ export class LifeLogDatabase extends Dexie {
 
     // 定义数据库schema
     this.version(1).stores({
-      categories: 'id, name, isDefault, order',
-      logs: 'id, startTime, endTime, status, *categoryIds, createdAt',
+      categories: 'id, name, isPreset, order',
+      logs: 'id, startTime, endTime, *categoryIds, createdAt',
       splitLogs: 'id, parentId, date, *categoryIds',
       settings: '++id',
     });
@@ -43,16 +43,27 @@ export async function initializeDatabase(): Promise<void> {
 
     if (settingsCount === 0) {
       // 首次使用，初始化默认设置
+      const now = new Date().toISOString();
       const defaultSettings: UserSettings = {
-        longTaskThreshold: DEFAULT_LONG_TASK_THRESHOLD,
-        weekStartDay: DEFAULT_WEEK_START_DAY,
-        defaultExportFormat: DEFAULT_EXPORT_FORMAT,
+        theme: 'light',
+        language: 'zh-CN',
+        weekStartsOn: 1,
+        longTaskThreshold: 6,
+        enableNotifications: true,
         dashboardLayout: {
-          visibleCharts: DEFAULT_VISIBLE_CHARTS as ChartType[],
-          chartOrder: DEFAULT_VISIBLE_CHARTS as ChartType[],
+          widgets: [
+            { id: 'today-summary', enabled: true, order: 0 },
+            { id: 'category-pie', enabled: true, order: 1 },
+            { id: 'weekly-trend', enabled: true, order: 2 },
+            { id: 'streak-counter', enabled: true, order: 3 },
+          ],
         },
-        streakCount: 0,
-        lastActiveDate: new Date().toISOString().split('T')[0],
+        exportFormat: 'csv',
+        consecutiveDays: 0,
+        longestStreak: 0,
+        totalLogCount: 0,
+        createdAt: now,
+        updatedAt: now,
       };
       await db.settings.add(defaultSettings);
       console.log('默认设置已初始化');
@@ -100,10 +111,10 @@ export const categoryService = {
     });
   },
 
-  // 删除分类（仅限非默认分类）
+  // 删除分类（仅限非预设分类）
   async delete(id: string): Promise<void> {
     const category = await db.categories.get(id);
-    if (category?.isDefault) {
+    if (category?.isPreset) {
       throw new Error('无法删除预设分类');
     }
     await db.categories.delete(id);
@@ -149,7 +160,7 @@ export const logService = {
       .where('startTime')
       .below(dayStart)
       .filter(log => {
-        if (!log.endTime) return log.status === 'active'; // 进行中的任务
+        if (!log.endTime) return true; // 进行中的任务
         return log.endTime >= dayStart; // 结束时间在今天或之后
       })
       .toArray();
@@ -166,8 +177,7 @@ export const logService = {
   // 获取进行中的任务
   async getActiveLogs(): Promise<LogEntry[]> {
     return await db.logs
-      .where('status')
-      .equals('active')
+      .filter(log => !log.endTime)
       .toArray();
   },
 
@@ -208,14 +218,8 @@ export const logService = {
       throw new Error('日志不存在');
     }
 
-    const start = new Date(log.startTime);
-    const end = new Date(endTime);
-    const duration = Math.round((end.getTime() - start.getTime()) / (1000 * 60));
-
     await db.logs.update(id, {
       endTime,
-      duration,
-      status: 'completed',
       updatedAt: new Date().toISOString(),
     });
   },
@@ -264,6 +268,16 @@ export const splitLogService = {
   async deleteByParentId(parentId: string): Promise<void> {
     await db.splitLogs.where('parentId').equals(parentId).delete();
   },
+
+  // 根据日志ID获取拆分记录（别名）
+  async getByLogId(parentId: string): Promise<SplitLogEntry[]> {
+    return await this.getByParentId(parentId);
+  },
+
+  // 删除拆分记录
+  async delete(id: string): Promise<void> {
+    await db.splitLogs.delete(id);
+  },
 };
 
 // ============ 设置操作 ============
@@ -277,20 +291,35 @@ export const settingsService = {
   // 更新设置
   async update(updates: Partial<UserSettings>): Promise<void> {
     const settings = await db.settings.toArray();
+    const now = new Date().toISOString();
+
     if (settings.length > 0) {
-      await db.settings.update(1, updates);
+      await db.settings.update(1, {
+        ...updates,
+        updatedAt: now,
+      });
     } else {
       // 如果没有设置，创建新的
       const defaultSettings: UserSettings = {
-        longTaskThreshold: DEFAULT_LONG_TASK_THRESHOLD,
-        weekStartDay: DEFAULT_WEEK_START_DAY,
-        defaultExportFormat: DEFAULT_EXPORT_FORMAT,
+        theme: 'light',
+        language: 'zh-CN',
+        weekStartsOn: 1,
+        longTaskThreshold: 6,
+        enableNotifications: true,
         dashboardLayout: {
-          visibleCharts: DEFAULT_VISIBLE_CHARTS as ChartType[],
-          chartOrder: DEFAULT_VISIBLE_CHARTS as ChartType[],
+          widgets: [
+            { id: 'today-summary', enabled: true, order: 0 },
+            { id: 'category-pie', enabled: true, order: 1 },
+            { id: 'weekly-trend', enabled: true, order: 2 },
+            { id: 'streak-counter', enabled: true, order: 3 },
+          ],
         },
-        streakCount: 0,
-        lastActiveDate: new Date().toISOString().split('T')[0],
+        exportFormat: 'csv',
+        consecutiveDays: 0,
+        longestStreak: 0,
+        totalLogCount: 0,
+        createdAt: now,
+        updatedAt: now,
         ...updates,
       };
       await db.settings.add(defaultSettings);
@@ -302,30 +331,13 @@ export const settingsService = {
     const settings = await this.get();
     if (!settings) return 0;
 
-    const today = new Date().toISOString().split('T')[0];
-    const lastActive = settings.lastActiveDate;
-
-    // 计算日期差
-    const lastDate = new Date(lastActive);
-    const todayDate = new Date(today);
-    const diffDays = Math.floor((todayDate.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24));
-
-    let newStreak = settings.streakCount;
-
-    if (diffDays === 0) {
-      // 今天已经记录过，不改变streak
-      newStreak = settings.streakCount;
-    } else if (diffDays === 1) {
-      // 连续记录
-      newStreak = settings.streakCount + 1;
-    } else {
-      // 中断了，重新开始
-      newStreak = 1;
-    }
+    // 简单实现：每次调用增加1
+    const newStreak = settings.consecutiveDays + 1;
+    const newLongest = Math.max(newStreak, settings.longestStreak);
 
     await this.update({
-      streakCount: newStreak,
-      lastActiveDate: today,
+      consecutiveDays: newStreak,
+      longestStreak: newLongest,
     });
 
     return newStreak;
