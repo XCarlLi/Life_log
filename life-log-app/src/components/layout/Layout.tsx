@@ -4,7 +4,7 @@ import { Navigation } from './Navigation';
 import { ToastContainer } from '../common';
 import { useToastStore, useCategoryStore, useSettingsStore } from '../../stores';
 import { useLongTaskNotification } from '../../hooks';
-import { db } from '../../services/db';
+import { initializeDatabase } from '../../services/db';
 
 export const Layout: React.FC = () => {
   const { toasts, removeToast } = useToastStore();
@@ -18,7 +18,7 @@ export const Layout: React.FC = () => {
     // Initialize database and load initial data
     const initializeApp = async () => {
       try {
-        await db.open();
+        await initializeDatabase();
         await loadCategories();
         await loadSettings();
       } catch (error) {
