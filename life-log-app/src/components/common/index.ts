@@ -6,4 +6,6 @@ export { Modal } from './Modal';
 export { Select } from './Select';
 export { Badge } from './Badge';
 export { ToastContainer } from './Toast';
+export { FloatingActionButton } from './FloatingActionButton';
+export { EmptyState } from './EmptyState';
 export type { ToastMessage, ToastType } from './Toast';
