@@ -14,7 +14,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2 group"
+      className="fixed bottom-6 right-6 md:bottom-8 md:right-8 z-50 bg-primary hover:bg-primary-hover text-white rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 flex items-center gap-2 group font-bold"
       aria-label={label}
     >
       {/* Mobile: 只显示图标 */}
