@@ -68,6 +68,7 @@ export default {
         'large': '16px',
       },
       boxShadow: {
+        'soft': '0 2px 8px rgba(255,137,102,0.08)',
         'small': '0 2px 8px rgba(255,137,102,0.08)',
         'medium': '0 4px 16px rgba(255,137,102,0.12)',
         'large': '0 8px 24px rgba(255,137,102,0.16)',
