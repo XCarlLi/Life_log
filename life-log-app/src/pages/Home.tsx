@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal } from '../components/common';
+import { Modal, FloatingActionButton, EmptyState } from '../components/common';
 import { LogForm, ActiveTaskCard, LogList } from '../components/log';
 import { useLogStore, useCategoryStore, useToastStore } from '../stores';
 import type { LogFormData } from '../components/log';
@@ -124,14 +124,39 @@ export const Home: React.FC = () => {
       {/* Recent Logs */}
       <div>
         <h2 className="text-xl font-semibold text-gray-900 mb-4">最近7天</h2>
-        <LogList
-          logs={recentLogs}
-          categories={categories}
-          onEdit={openEditModal}
-          onDelete={handleDeleteLog}
-          groupByDate
-        />
+        {recentLogs.length === 0 && activeLogs.length === 0 ? (
+          <EmptyState
+            icon={
+              <svg className="w-24 h-24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            }
+            title="还没有任何记录"
+            description="开始记录你的第一个任务吧！点击右下角的按钮或上方的「开始新任务」按钮即可开始。"
+            actionLabel="开始第一个任务"
+            onAction={() => setIsCreateModalOpen(true)}
+          />
+        ) : (
+          <LogList
+            logs={recentLogs}
+            categories={categories}
+            onEdit={openEditModal}
+            onDelete={handleDeleteLog}
+            groupByDate
+          />
+        )}
       </div>
+
+      {/* Floating Action Button */}
+      <FloatingActionButton
+        onClick={() => setIsCreateModalOpen(true)}
+        label="开始新任务"
+      />
 
       {/* Create Modal */}
       <Modal
