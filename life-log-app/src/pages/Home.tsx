@@ -27,7 +27,7 @@ export const Home: React.FC = () => {
         description: data.description,
         categoryIds: data.categoryIds,
         location: data.location || undefined,
-        startTime: new Date(),
+        startTime: new Date().toISOString(),
       });
       setIsCreateModalOpen(false);
       addToast('success', '任务已开始', '开始记录时间啦！');
@@ -39,7 +39,7 @@ export const Home: React.FC = () => {
   const handleEndLog = async (id: string, location?: string) => {
     setEndingLogId(id);
     try {
-      await endLog(id, new Date(), location);
+      await endLog(id, new Date().toISOString(), location);
       addToast('success', '任务已结束', '记录完成！');
     } catch (error) {
       addToast('error', '结束失败', (error as Error).message);

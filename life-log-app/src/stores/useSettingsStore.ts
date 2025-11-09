@@ -28,6 +28,9 @@ const DEFAULT_SETTINGS: Omit<UserSettings, 'id' | 'createdAt' | 'updatedAt'> = {
     ],
   },
   exportFormat: 'csv',
+  consecutiveDays: 0,
+  longestStreak: 0,
+  totalLogCount: 0,
 };
 
 export const useSettingsStore = create<SettingsStore>((set) => ({
@@ -42,7 +45,7 @@ export const useSettingsStore = create<SettingsStore>((set) => ({
 
       // If no settings exist, create default settings
       if (!settings) {
-        const id = await settingsService.update(DEFAULT_SETTINGS);
+        await settingsService.update(DEFAULT_SETTINGS);
         settings = await settingsService.get();
       }
 

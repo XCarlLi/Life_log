@@ -17,7 +17,7 @@ export const useLongTaskNotification = () => {
       const thresholdMs = (settings.longTaskThreshold || 6) * 60 * 60 * 1000; // Convert hours to milliseconds
 
       activeLogs.forEach((log) => {
-        const duration = now.getTime() - log.startTime.getTime();
+        const duration = now.getTime() - new Date(log.startTime).getTime();
 
         // Check if task exceeds threshold and hasn't been notified yet
         if (duration >= thresholdMs && !notifiedTasksRef.current.has(log.id)) {

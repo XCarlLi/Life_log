@@ -62,7 +62,7 @@ export const LogList: React.FC<LogListProps> = ({
 
   // Group logs by date
   const groupedLogs = logs.reduce((acc, log) => {
-    const dateKey = log.startTime.toDateString();
+    const dateKey = new Date(log.startTime).toDateString();
     if (!acc[dateKey]) {
       acc[dateKey] = [];
     }
@@ -97,7 +97,7 @@ export const LogList: React.FC<LogListProps> = ({
         // Calculate total duration for the day
         const totalDuration = dateLogs.reduce((sum, log) => {
           if (log.endTime) {
-            return sum + (log.endTime.getTime() - log.startTime.getTime()) / 1000;
+            return sum + (new Date(log.endTime).getTime() - new Date(log.startTime).getTime()) / 1000;
           }
           return sum;
         }, 0);

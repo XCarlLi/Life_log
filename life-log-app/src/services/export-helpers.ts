@@ -10,7 +10,7 @@ export function exportToCSV(logs: LogEntry[]): void {
 
   logs.forEach(log => {
     const duration = log.endTime
-      ? (log.endTime.getTime() - log.startTime.getTime()) / 1000
+      ? (new Date(log.endTime).getTime() - new Date(log.startTime).getTime()) / 1000
       : 0;
 
     const description = log.description.replace(/"/g, '""');
@@ -49,10 +49,7 @@ export function exportToJSON(logs: LogEntry[]): void {
     totalLogs: logs.length,
     logs: logs.map(log => ({
       ...log,
-      startTime: log.startTime.toISOString(),
-      endTime: log.endTime?.toISOString(),
-      createdAt: log.createdAt.toISOString(),
-      updatedAt: log.updatedAt.toISOString(),
+      // Times are already in ISO string format
     })),
   };
 

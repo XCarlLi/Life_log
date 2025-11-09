@@ -15,7 +15,7 @@ interface LogStore {
   loadLogsByDateRange: (startDate: Date, endDate: Date) => Promise<LogEntry[]>;
 
   startLog: (log: Omit<LogEntry, 'id' | 'createdAt' | 'updatedAt'>) => Promise<string>;
-  endLog: (id: string, endTime: Date, location?: string) => Promise<void>;
+  endLog: (id: string, endTime: string, location?: string) => Promise<void>;
   updateLog: (id: string, updates: Partial<LogEntry>) => Promise<void>;
   deleteLog: (id: string) => Promise<void>;
 
@@ -45,7 +45,10 @@ export const useLogStore = create<LogStore>((set, get) => ({
       const startDate = new Date();
       startDate.setDate(startDate.getDate() - days);
 
-      const logs = await logService.getByDateRange(startDate, endDate);
+      const logs = await logService.getByDateRange(
+        startDate.toISOString().split('T')[0],
+        endDate.toISOString().split('T')[0]
+      );
       set({ recentLogs: logs, isLoading: false });
     } catch (error) {
       set({ error: (error as Error).message, isLoading: false });
@@ -54,7 +57,10 @@ export const useLogStore = create<LogStore>((set, get) => ({
 
   loadLogsByDateRange: async (startDate, endDate) => {
     try {
-      return await logService.getByDateRange(startDate, endDate);
+      return await logService.getByDateRange(
+        startDate.toISOString().split('T')[0],
+        endDate.toISOString().split('T')[0]
+      );
     } catch (error) {
       set({ error: (error as Error).message });
       return [];

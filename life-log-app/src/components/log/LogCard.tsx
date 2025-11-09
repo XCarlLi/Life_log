@@ -27,11 +27,11 @@ export const LogCard: React.FC<LogCardProps> = ({
   );
 
   const duration = log.endTime
-    ? Math.floor((log.endTime.getTime() - log.startTime.getTime()) / 1000)
+    ? Math.floor((new Date(log.endTime).getTime() - new Date(log.startTime).getTime()) / 1000)
     : 0;
 
   const isCrossDay = log.endTime &&
-    log.startTime.toDateString() !== log.endTime.toDateString();
+    new Date(log.startTime).toDateString() !== new Date(log.endTime).toDateString();
 
   return (
     <Card
@@ -80,10 +80,10 @@ export const LogCard: React.FC<LogCardProps> = ({
                   />
                 </svg>
                 <span>
-                  {log.startTime.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                  {new Date(log.startTime).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
                   {' - '}
                   {log.endTime
-                    ? log.endTime.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
+                    ? new Date(log.endTime).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })
                     : '进行中'}
                 </span>
               </div>

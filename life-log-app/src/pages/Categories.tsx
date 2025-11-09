@@ -31,6 +31,7 @@ export const Categories: React.FC = () => {
         color: formData.color,
         description: formData.description,
         isPreset: false,
+        order: categories.length + 1,
       });
       setIsCreateModalOpen(false);
       setFormData({ name: '', icon: '', color: '#FF8966', description: '' });

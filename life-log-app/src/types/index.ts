@@ -7,8 +7,8 @@ export interface Category {
   description?: string;      // 可选描述
   isPreset: boolean;         // 是否为预设分类（不可删除）
   order: number;             // 排序权重
-  createdAt: Date;           // 创建时间
-  updatedAt: Date;           // 更新时间
+  createdAt: string;         // ISO 8601时间戳
+  updatedAt: string;         // ISO 8601时间戳
 }
 
 // 预设分类类型
@@ -25,13 +25,13 @@ export type DefaultCategoryType =
 // ============ 日志条目 (LogEntry) ============
 export interface LogEntry {
   id: string;                // UUID
-  startTime: Date;           // 开始时间
-  endTime?: Date;            // 结束时间，undefined表示进行中
+  startTime: string;         // ISO 8601，如 "2025-11-08T09:00:00+08:00"
+  endTime?: string;          // ISO 8601，undefined表示进行中
   categoryIds: string[];     // 分类ID数组（多标签）
   description: string;       // 1-140字符
   location?: string;         // 可选，最大50字符
-  createdAt: Date;           // 创建时间
-  updatedAt: Date;           // 更新时间
+  createdAt: string;         // ISO 8601时间戳
+  updatedAt: string;         // ISO 8601时间戳
 }
 
 // ============ 拆分记录 (用于跨天统计) ============
@@ -80,8 +80,8 @@ export interface UserSettings {
   consecutiveDays: number;        // 连续记录天数
   longestStreak: number;          // 最长记录天数
   totalLogCount: number;          // 总记录数
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;              // ISO 8601时间戳
+  updatedAt: string;              // ISO 8601时间戳
 }
 
 export interface DashboardLayout {

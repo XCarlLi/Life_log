@@ -74,7 +74,7 @@ export const PRESET_CATEGORIES = Object.values(DEFAULT_CATEGORIES_CONFIG);
 
 // 生成预设分类（带UUID和时间戳）
 export const generateDefaultCategories = (): Category[] => {
-  const now = new Date();
+  const now = new Date().toISOString();
 
   return Object.values(DEFAULT_CATEGORIES_CONFIG).map((config) => ({
     ...config,

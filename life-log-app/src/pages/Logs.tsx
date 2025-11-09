@@ -92,7 +92,7 @@ export const Logs: React.FC = () => {
           <div className="text-center">
             <div className="text-2xl font-bold text-primary">
               {new Set(
-                recentLogs.map((log) => log.startTime.toDateString())
+                recentLogs.map((log) => new Date(log.startTime).toDateString())
               ).size}
             </div>
             <div className="text-sm text-gray-600 mt-1">活跃天数</div>

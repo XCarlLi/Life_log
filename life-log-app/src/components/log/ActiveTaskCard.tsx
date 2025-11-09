@@ -25,7 +25,7 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
   useEffect(() => {
     const updateElapsed = () => {
       const now = new Date();
-      const diff = now.getTime() - log.startTime.getTime();
+      const diff = now.getTime() - new Date(log.startTime).getTime();
       setElapsed(Math.floor(diff / 1000));
     };
 
@@ -103,7 +103,7 @@ export const ActiveTaskCard: React.FC<ActiveTaskCardProps> = ({
 
             {/* Start Time */}
             <div className="text-sm text-gray-500">
-              开始于 {log.startTime.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+              开始于 {new Date(log.startTime).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
 
